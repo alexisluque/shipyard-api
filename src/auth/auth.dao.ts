@@ -8,36 +8,33 @@ const { JWT_SECRET } = env.auth;
 
 export async function registerDao({ email, password }: User) {
   const hashedPassword = await bcrypt.hash(password, 10);
-  
-  await query(`INSERT INTO Users(email, password) VALUES ($1, $2)`, [
-    email,
-    hashedPassword,
-  ]);
+
+  const { rows } = await query(
+    `INSERT INTO Users(email, password)
+    VALUES ($1, $2)
+    RETURNING *`,
+    [email, hashedPassword],
+  );
+
+  return rows[0];
 }
 
 export async function loginDao({ email, password }: User) {
-  const result = await query(
-      'SELECT * FROM users WHERE email = $1',
-      [email]
-    );
+  const { rows } = await query('SELECT * FROM users WHERE email = $1', [email]);
 
-    const user = result.rows[0];
+  const user = rows[0];
 
-    if (!user) {
-      throw new Error('Invalid credentials');
-    }
+  if (!user) {
+    throw new Error('Invalid credentials');
+  }
 
-    const validPassword = await bcrypt.compare(password, user.password);
+  const validPassword = await bcrypt.compare(password, user.password);
 
-    if (!validPassword) {
-      throw new Error('Invalid credentials');
-    }
+  if (!validPassword) {
+    throw new Error('Invalid credentials');
+  }
 
-    const token = jwt.sign(
-      { userId: user.id },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
 
-    return token;
+  return token;
 }
