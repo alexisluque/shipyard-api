@@ -13,6 +13,9 @@ function required(name: string): string {
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
   PORT: Number(process.env.PORT) || 3000,
+  auth: {
+    JWT_SECRET: required('JWT_SECRET'),
+  },
   db: {
     DB_HOST: required('DB_HOST'),
     DB_PORT: Number(process.env.POSTGRES_PORT) || 5432,
