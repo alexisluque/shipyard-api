@@ -42,7 +42,7 @@ This includes:
 
 ### Build & Run
 
-* `npm run compile`
+* `npm run build`
   Compiles TypeScript into JavaScript.
 
 * `npm start`
@@ -83,15 +83,19 @@ This project is designed to integrate with a CI/CD pipeline where the following 
 * Linting (`npm run lint`)
 * Formatting (`npm run format:check`)
 * Type checking (`npm run type-check`)
-* Build (`npm run compile`)
+* Build (`npm run build`)
 
 Any failure in these steps should block deployment.
 
 ---
 
-## 🐳 Containerization (Planned)
+## 🐳 Containerization
 
-The service will be containerized using Docker and orchestrated alongside other services (frontend, database, reverse proxy) using Docker Compose.
+* `docker compose up -d`
+  Creates and starts the dabtabase and backend containers in detach mode.
+
+* `docker compose build`
+  To build the backend container(Only needed if the Dockerfile is changed).
 
 ---
 
