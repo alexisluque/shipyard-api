@@ -1,7 +1,7 @@
 import express from 'express';
 import router from './router.js';
 import { query } from './db/index.js';
-import { env } from '../config/env.js';
+import { env } from './config/env.js';
 
 const app = express();
 

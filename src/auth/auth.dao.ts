@@ -1,4 +1,4 @@
-import { env } from '../../config/env.js';
+import { env } from '../config/env.js';
 import { query } from '../db/index.js';
 import type { User } from './types.js';
 import bcrypt from 'bcrypt';

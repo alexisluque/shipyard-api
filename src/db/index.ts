@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-import { env } from '../../config/env.js';
+import { env } from '../config/env.js';
 
 const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } = env.db;
 
