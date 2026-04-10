@@ -10,13 +10,15 @@ export const authMiddleware = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    return res.status(401).json({ error: 'Missing token' });
+    next(new Error('Missing token'));
+    return;
   }
 
   const token = authHeader.split(' ')[1];
 
   if (!token) {
-    return res.status(401).json({ error: 'Missing token' });
+    next(new Error('Missing token'));
+    return;
   }
 
   try {
@@ -30,6 +32,6 @@ export const authMiddleware = (
   } catch (error) {
     console.error(error);
 
-    return res.status(401).json({ error: 'Invalid token' });
+    next(new Error('Invalid token'));
   }
 };

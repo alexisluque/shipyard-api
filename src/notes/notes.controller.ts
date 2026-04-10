@@ -5,6 +5,7 @@ import {
   updateNote as updateNoteDao,
   deleteNote as deleteNoteDao,
 } from './notes.dao.js';
+import { NotFoundError, ValidationError } from '../error/error.js';
 
 export const getNotes = async (req: Request, res: Response) => {
   const notes = await getNotesByUser(req.userId!);
@@ -16,7 +17,7 @@ export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
 
   if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+    throw new ValidationError('Title is required');
   }
 
   const note = await createNoteDao(req.userId!, title, content);
@@ -29,13 +30,13 @@ export const updateNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
 
   if (!title) {
-    return res.status(400).json({ error: 'Title is required' });
+    throw new ValidationError('Title is required');
   }
 
   const note = await updateNoteDao(id as string, req.userId!, title, content);
 
   if (!note) {
-    throw new Error('Note not found');
+    throw new NotFoundError('Note not found');
   }
 
   res.json(note);
@@ -47,7 +48,7 @@ export const deleteNote = async (req: Request, res: Response) => {
   const note = await deleteNoteDao(id as string, req.userId!);
 
   if (!note) {
-    throw new Error('Note not found');
+    throw new NotFoundError('Note not found');
   }
 
   res.status(204).send();

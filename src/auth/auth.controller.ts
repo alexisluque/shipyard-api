@@ -1,3 +1,4 @@
+import { ValidationError } from "../error/error.js";
 import { loginDao, registerDao } from "./auth.dao.js";
 import type { Request, Response } from 'express';
 
@@ -13,7 +14,7 @@ export async function login(req: Request, res: Response) {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new Error('Missing email or password');
+    throw new ValidationError('Missing email or password');
   }
 
   const token = await loginDao({ email, password });
