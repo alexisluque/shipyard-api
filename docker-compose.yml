@@ -12,11 +12,19 @@ services:
       - ./src/db/init:/docker-entrypoint-initdb.d
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "pg_isready"]
+      test: ["CMD", "pg_isready -U postgres"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
+
+  shipyard-api:
+    build: ./
+    ports:
+      - 3000:3000
+    env_file: .env
+    depends_on:
+      - db
 
 volumes:
   pg-data:
