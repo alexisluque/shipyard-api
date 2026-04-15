@@ -1,16 +1,23 @@
-import { Pool } from 'pg';
-import { env } from '../config/env.js';
+import { Pool, type PoolConfig, type QueryResultRow } from 'pg';
+import { InternalServerError } from '../error/error.js';
 
-const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } = env.db;
+let pool: Pool;
 
-const pool = new Pool({
-  host: DB_HOST,
-  database: DB_NAME,
-  user: DB_USER,
-  password: DB_PASSWORD,
-  port: DB_PORT,
-});
+export function initDb(config: PoolConfig) {
+  pool = new Pool(config);
+}
 
-export const query = (text: string, params: string[]) => {
-  return pool.query(text, params);
-};
+export function query<T extends QueryResultRow>(
+  text: string,
+  params: unknown[],
+) {
+  if (!pool) throw new InternalServerError('Database pool is not initialized');
+
+  return pool.query<T>(text, params);
+}
+
+export async function end() {
+  if (!pool) throw new InternalServerError('Database pool is not initialized');
+
+  await pool.end();
+}

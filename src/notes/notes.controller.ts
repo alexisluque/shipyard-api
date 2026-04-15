@@ -5,7 +5,9 @@ import {
   updateNote as updateNoteDao,
   deleteNote as deleteNoteDao,
 } from './notes.dao.js';
-import { NotFoundError, ValidationError } from '../error/error.js';
+import { NotFoundError } from '../error/error.js';
+import * as z from 'zod';
+import { validateUUID } from '../utils/index.js';
 
 export const getNotes = async (req: Request, res: Response) => {
   const notes = await getNotesByUser(req.userId!);
@@ -16,10 +18,6 @@ export const getNotes = async (req: Request, res: Response) => {
 export const createNote = async (req: Request, res: Response) => {
   const { title, content } = req.body;
 
-  if (!title) {
-    throw new ValidationError('Title is required');
-  }
-
   const note = await createNoteDao(req.userId!, title, content);
 
   res.status(201).json(note);
@@ -29,8 +27,8 @@ export const updateNote = async (req: Request, res: Response) => {
   const { id } = req.params;
   const { title, content } = req.body;
 
-  if (!title) {
-    throw new ValidationError('Title is required');
+  if (!validateUUID(id as string)) {
+    throw new NotFoundError('Note not found');
   }
 
   const note = await updateNoteDao(id as string, req.userId!, title, content);
@@ -43,7 +41,11 @@ export const updateNote = async (req: Request, res: Response) => {
 };
 
 export const deleteNote = async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const { id } = req.params as { id: string };
+
+  if (!validateUUID(id)) {
+    throw new NotFoundError('Note not found');
+  }
 
   const note = await deleteNoteDao(id as string, req.userId!);
 
