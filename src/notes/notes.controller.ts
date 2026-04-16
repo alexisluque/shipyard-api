@@ -6,7 +6,6 @@ import {
   deleteNote as deleteNoteDao,
 } from './notes.dao.js';
 import { NotFoundError } from '../error/error.js';
-import * as z from 'zod';
 import { validateUUID } from '../utils/index.js';
 
 export const getNotes = async (req: Request, res: Response) => {

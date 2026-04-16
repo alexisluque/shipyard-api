@@ -22,5 +22,5 @@ export const env = {
     DB_USER: required('POSTGRES_USER'),
     DB_PASSWORD: required('POSTGRES_PASSWORD'),
     DB_NAME: required('POSTGRES_DB'),
-  }
+  },
 };

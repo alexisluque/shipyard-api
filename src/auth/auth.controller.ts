@@ -1,6 +1,6 @@
-import { loginDao, registerDao } from "./auth.dao.js";
+import { loginDao, registerDao } from './auth.dao.js';
 import type { Request, Response } from 'express';
-import { UserDto } from "./auth.dto.js";
+import { UserDto } from './auth.dto.js';
 
 export async function register(req: Request, res: Response) {
   const user = req.body;

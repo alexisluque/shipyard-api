@@ -33,7 +33,7 @@ export const registerDao = async ({ email, password }: LoginType) => {
 };
 
 export const loginDao = async ({ email, password }: LoginType) => {
-  const { rows } = await query<{ id: string, password: string }>(
+  const { rows } = await query<{ id: string; password: string }>(
     `SELECT id, password
     FROM users
     WHERE email=$1`,

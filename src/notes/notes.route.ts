@@ -13,7 +13,18 @@ const router: Router = express.Router();
 
 router.get('/', authMiddleware, getNotes);
 router.post('/', authMiddleware, validate(noteSchema), createNote);
-router.put('/:id', authMiddleware, validate(noteSchema), validate(noteParamsSchema, 'params'), updateNote);
-router.delete('/:id', authMiddleware, validate(noteParamsSchema, 'params'), deleteNote);
+router.put(
+  '/:id',
+  authMiddleware,
+  validate(noteSchema),
+  validate(noteParamsSchema, 'params'),
+  updateNote,
+);
+router.delete(
+  '/:id',
+  authMiddleware,
+  validate(noteParamsSchema, 'params'),
+  deleteNote,
+);
 
 export default router;

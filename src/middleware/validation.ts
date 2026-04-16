@@ -14,7 +14,7 @@ export function validate(schema: ZodType, target: ValidateTarget = 'body') {
         message: issue.message,
       }));
 
-      throw new ValidationError('Validation error', fields)
+      throw new ValidationError('Validation error', fields);
     }
 
     req[target] = result.data;
