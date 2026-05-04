@@ -2,12 +2,12 @@
   "extends": "@tsconfig/node24/tsconfig.json",
   "compilerOptions": {
     "module": "nodenext",
+    "moduleResolution": "nodenext",
     "target": "esnext",
     "types": ["node"],
 
     "outDir": "./dist",
     "rootDir": "./",
-    
 
     "sourceMap": true,
     "declaration": true,
@@ -21,6 +21,9 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true
   }
 }

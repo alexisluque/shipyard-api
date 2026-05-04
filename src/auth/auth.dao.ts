@@ -1,58 +1,50 @@
-import { env } from '../config/env.js';
-import { query } from '../db/index.js';
 import { ConflictError, UnauthorizedError } from '../error/error.js';
-import type { User } from './types.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import type { LoginType } from './auth.schema.js';
+import { User } from './users.entity.js';
+import type { DataSource } from 'typeorm';
 
-const { JWT_SECRET } = env.auth;
+const { JWT_SECRET } = process.env;
 
-export const registerDao = async ({ email, password }: LoginType) => {
-  const { rows: emailRows } = await query(
-    `SELECT 1
-    FROM users
-    WHERE email=$1`,
-    [email],
-  );
+export const createAuthDao = (db: DataSource) => {
+  const userRepository = db.getRepository(User);
 
-  if (emailRows[0]) {
-    throw new ConflictError('Email already exists');
-  }
+  return {
+    registerDao: async ({ email, password }: LoginType) => {
+      const user = await userRepository.findOne({ where: { email } });
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+      if (user) {
+        throw new ConflictError('Email already exists');
+      }
 
-  const { rows } = await query<User>(
-    `INSERT INTO Users(email, password)
-    VALUES ($1, $2)
-    RETURNING *`,
-    [email, hashedPassword],
-  );
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-  return rows[0]!;
-};
+      const newUser = new User();
 
-export const loginDao = async ({ email, password }: LoginType) => {
-  const { rows } = await query<{ id: string; password: string }>(
-    `SELECT id, password
-    FROM users
-    WHERE email=$1`,
-    [email],
-  );
+      newUser.email = email;
+      newUser.password = hashedPassword;
 
-  const user = rows[0];
+      return await userRepository.save(newUser);
+    },
+    loginDao: async ({ email, password }: LoginType) => {
+      const user = await userRepository.findOne({ where: { email } });
 
-  if (!user) {
-    throw new UnauthorizedError('Invalid credentials');
-  }
+      if (!user) {
+        throw new UnauthorizedError('Invalid credentials');
+      }
 
-  const validPassword = await bcrypt.compare(password, user.password);
+      const validPassword = await bcrypt.compare(password, user.password);
 
-  if (!validPassword) {
-    throw new UnauthorizedError('Invalid credentials');
-  }
+      if (!validPassword) {
+        throw new UnauthorizedError('Invalid credentials');
+      }
 
-  const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: '1h' });
+      const token = jwt.sign({ userId: user.id }, JWT_SECRET!, {
+        expiresIn: '1h',
+      });
 
-  return token;
+      return token;
+    },
+  };
 };

@@ -4,7 +4,7 @@ export class NoteDto {
     public user_id: string,
     public title: string,
     public content: string,
-    public created_at: string,
-    public updated_at: string,
+    public created_at: Date,
+    public updated_at: Date,
   ) {}
 }

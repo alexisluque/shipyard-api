@@ -1,56 +1,57 @@
 import type { Request, Response } from 'express';
-import {
-  createNote as createNoteDao,
-  getNotesByUser,
-  updateNote as updateNoteDao,
-  deleteNote as deleteNoteDao,
-} from './notes.dao.js';
 import { NotFoundError } from '../error/error.js';
 import { validateUUID } from '../utils/index.js';
+import type { AppContext } from '../app/context.js';
+import { CreatenotesDao } from './notes.dao.js';
 
-export const getNotes = async (req: Request, res: Response) => {
-  const notes = await getNotesByUser(req.userId!);
+export const createNotesController = (ctx: AppContext) => {
+  const { getNotesByUser, createNote, deleteNote, updateNote } = CreatenotesDao(
+    ctx.db,
+  );
 
-  res.json(notes);
-};
+  return {
+    getNotes: async (req: Request, res: Response) => {
+      const notes = await getNotesByUser(req.userId!);
 
-export const createNote = async (req: Request, res: Response) => {
-  const { title, content } = req.body;
+      res.json(notes);
+    },
+    createNote: async (req: Request, res: Response) => {
+      const { title, content } = req.body;
 
-  const note = await createNoteDao(req.userId!, title, content);
+      const note = await createNote(req.userId!, title, content);
 
-  res.status(201).json(note);
-};
+      res.status(201).json(note);
+    },
+    updateNote: async (req: Request, res: Response) => {
+      const { id } = req.params;
+      const { title, content } = req.body;
 
-export const updateNote = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const { title, content } = req.body;
+      if (!validateUUID(id as string)) {
+        throw new NotFoundError('Note not found');
+      }
 
-  if (!validateUUID(id as string)) {
-    throw new NotFoundError('Note not found');
-  }
+      const note = await updateNote(id as string, req.userId!, title, content);
 
-  const note = await updateNoteDao(id as string, req.userId!, title, content);
+      if (!note) {
+        throw new NotFoundError('Note not found');
+      }
 
-  if (!note) {
-    throw new NotFoundError('Note not found');
-  }
+      res.json(note);
+    },
+    deleteNote: async (req: Request, res: Response) => {
+      const { id } = req.params as { id: string };
 
-  res.json(note);
-};
+      if (!validateUUID(id)) {
+        throw new NotFoundError('Note not found');
+      }
 
-export const deleteNote = async (req: Request, res: Response) => {
-  const { id } = req.params as { id: string };
+      const note = await deleteNote(id as string, req.userId!);
 
-  if (!validateUUID(id)) {
-    throw new NotFoundError('Note not found');
-  }
+      if (!note) {
+        throw new NotFoundError('Note not found');
+      }
 
-  const note = await deleteNoteDao(id as string, req.userId!);
-
-  if (!note) {
-    throw new NotFoundError('Note not found');
-  }
-
-  res.status(204).send();
+      res.status(204).send();
+    },
+  };
 };

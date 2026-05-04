@@ -1,23 +1,29 @@
-import { loginDao, registerDao } from './auth.dao.js';
 import type { Request, Response } from 'express';
 import { UserDto } from './auth.dto.js';
+import type { AppContext } from '../app/context.js';
+import { createAuthDao } from './auth.dao.js';
 
-export async function register(req: Request, res: Response) {
-  const user = req.body;
+export const createAuthController = (ctx: AppContext) => {
+  const authDao = createAuthDao(ctx.db);
 
-  const newUser = await registerDao(user);
+  return {
+    register: async (req: Request, res: Response) => {
+      const user = req.body;
 
-  const { id, email, created_at, updated_at } = newUser;
+      const newUser = await authDao.registerDao(user);
 
-  const userDto = new UserDto(id, email, created_at, updated_at);
+      const { id, email, created_at, updated_at } = newUser;
 
-  res.status(201).json(userDto);
-}
+      const userDto = new UserDto(id, email, created_at, updated_at);
 
-export async function login(req: Request, res: Response) {
-  const { email, password } = req.body;
+      res.status(201).json(userDto);
+    },
+    login: async (req: Request, res: Response) => {
+      const { email, password } = req.body;
 
-  const accessToken = await loginDao({ email, password });
+      const accessToken = await authDao.loginDao({ email, password });
 
-  return res.status(200).json({ accessToken });
-}
+      return res.status(200).json({ accessToken });
+    },
+  };
+};

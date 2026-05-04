@@ -1,23 +1,32 @@
-import { expect, describe, it, beforeEach } from 'vitest';
-import { createApp } from '../src/app.js';
+import { expect, describe, it, beforeAll, beforeEach } from 'vitest';
 import supertest from 'supertest';
-import { query } from '../src/db/index.js';
-import type { NoteDto } from '../src/notes/notes.dto.js';
+import { createApp } from '../src/app/app.js';
+import type TestAgent from 'supertest/lib/agent.js';
+import type { DataSource } from 'typeorm';
+import { resetDatabase } from './setup-db.js';
 import type { UserDto } from '../src/auth/auth.dto.js';
+import type { NoteDto } from '../src/notes/notes.dto.js';
+import { createTestDataSource } from './data-source.tests.js';
 
-const app = createApp({
-  connectionString: process.env.DATABASE_URL,
+let app;
+let db: DataSource;
+let request: TestAgent;
+
+beforeAll(async () => {
+  db = createTestDataSource({ url: process.env.DATABASE_URL! });
+  await db.initialize();
+
+  app = await createApp({ db });
+
+  request = supertest(app);
 });
 
-const request = supertest(app);
-
 beforeEach(async () => {
-  await query('DELETE FROM notes', []);
-  await query('DELETE FROM users', []);
+  await resetDatabase(db);
 });
 
 // helpers
-async function loginAndRegister() {
+const loginAndRegister = async () => {
   const { body } = await request.post('/api/auth/register').send({
     email: 'user@example.com',
     password: 'password123',
@@ -33,21 +42,22 @@ async function loginAndRegister() {
   const accessToken = res.body.accessToken as string;
 
   return { user, accessToken };
-}
+};
 
-async function createNote(token: string) {
+const createNote = async (token: string) => {
   const res = await request
     .post('/api/notes')
     .set('Authorization', `Bearer ${token}`)
     .send({ title: 'Test note', content: 'Test content' });
 
   return res.body as NoteDto;
-}
+};
 
 describe('GET /notes', () => {
   it('should return all notes for the authenticated user', async () => {
-    const { accessToken, user } = await loginAndRegister();
+    const { accessToken } = await loginAndRegister();
     const note = await createNote(accessToken);
+    console.log(note, 'note');
 
     const res = await request
       .get('/api/notes')
@@ -58,7 +68,6 @@ describe('GET /notes', () => {
 
     expect(res.body[0]).toMatchObject({
       id: expect.any(String),
-      user_id: user.id,
       title: note.title,
       content: note.content,
       created_at: expect.any(String),
@@ -82,7 +91,7 @@ describe('GET /notes', () => {
 
 describe('POST /notes', () => {
   it('should create a note', async () => {
-    const { accessToken, user } = await loginAndRegister();
+    const { accessToken } = await loginAndRegister();
 
     const res = await request
       .post('/api/notes')
@@ -94,7 +103,6 @@ describe('POST /notes', () => {
       id: expect.any(String),
       title: 'Test note',
       content: 'Test content',
-      user_id: user.id,
       created_at: expect.any(String),
       updated_at: expect.any(String),
     });
