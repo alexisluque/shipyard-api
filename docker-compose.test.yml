@@ -7,5 +7,3 @@ services:
       POSTGRES_DB: shipyard_test
     ports:
       - 5433:5432
-    volumes:
-      - ./src/db/init:/docker-entrypoint-initdb.d
