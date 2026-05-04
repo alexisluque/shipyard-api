@@ -121,6 +121,8 @@ describe('POST /auth/login', () => {
       password: 'password123',
     });
 
+    console.log(res);
+
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ accessToken: expect.any(String) });
   });
