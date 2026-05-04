@@ -1,12 +1,18 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
     "sourceMap": false,
     "declaration": false,
     "declarationMap": false
   },
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "test",
+    "**/*.test.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
   ]
 }

@@ -1,14 +1,22 @@
-import { createApp } from './app.js';
-import { env } from './config/env.js';
+import 'dotenv/config';
+import { createApp } from './app/app.js';
 
-const { DB_HOST, DB_NAME, DB_PASSWORD, DB_PORT, DB_USER } = env.db;
+import 'reflect-metadata';
+import { createAppDataSource } from './db/data-source.js';
 
-const connectionString = `postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`;
+const main = async () => {
+  if (!process.env.DATABASE_URL) {
+    throw new Error('DATABASE_URL is not defined');
+  }
 
-const app = createApp({
-  connectionString,
-});
+  const db = createAppDataSource({ url: process.env.DATABASE_URL });
+  await db.initialize();
 
-app.listen(env.PORT, () => {
-  console.log('App listening on port', env.PORT);
-});
+  const app = await createApp({ db });
+
+  app.listen(process.env.PORT, () => {
+    console.log('App listening on port', process.env.PORT);
+  });
+};
+
+main().catch((error) => console.error(error));

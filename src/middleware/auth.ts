@@ -1,11 +1,12 @@
 import type { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import { env } from '../config/env.js';
 import { UnauthorizedError } from '../error/error.js';
+
+const { JWT_SECRET } = process.env;
 
 export const authMiddleware = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ) => {
   const authHeader = req.headers.authorization;
@@ -23,7 +24,7 @@ export const authMiddleware = (
   }
 
   try {
-    const payload = jwt.verify(token, env.auth.JWT_SECRET) as {
+    const payload = jwt.verify(token, JWT_SECRET!) as {
       userId: string;
     };
 

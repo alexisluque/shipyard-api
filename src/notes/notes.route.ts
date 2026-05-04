@@ -1,30 +1,31 @@
 import express, { Router } from 'express';
-import {
-  getNotes,
-  createNote,
-  updateNote,
-  deleteNote,
-} from './notes.controller.js';
 import { authMiddleware } from '../middleware/auth.js';
 import { validate } from '../middleware/validation.js';
 import { noteParamsSchema, noteSchema } from './notes.schema.js';
+import type { AppContext } from '../app/context.js';
+import { createNotesController } from './notes.controller.js';
 
-const router: Router = express.Router();
+export const createNotesRouter = (ctx: AppContext) => {
+  const { getNotes, createNote, updateNote, deleteNote } =
+    createNotesController(ctx);
 
-router.get('/', authMiddleware, getNotes);
-router.post('/', authMiddleware, validate(noteSchema), createNote);
-router.put(
-  '/:id',
-  authMiddleware,
-  validate(noteSchema),
-  validate(noteParamsSchema, 'params'),
-  updateNote,
-);
-router.delete(
-  '/:id',
-  authMiddleware,
-  validate(noteParamsSchema, 'params'),
-  deleteNote,
-);
+  const router: Router = express.Router();
 
-export default router;
+  router.get('/', authMiddleware, getNotes);
+  router.post('/', authMiddleware, validate(noteSchema), createNote);
+  router.put(
+    '/:id',
+    authMiddleware,
+    validate(noteSchema),
+    validate(noteParamsSchema, 'params'),
+    updateNote,
+  );
+  router.delete(
+    '/:id',
+    authMiddleware,
+    validate(noteParamsSchema, 'params'),
+    deleteNote,
+  );
+
+  return router;
+};

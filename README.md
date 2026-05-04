@@ -12,19 +12,19 @@ The goal of this project is not only to build application features, but to simul
 
 This includes:
 
-* Type safety with TypeScript
-* Code quality enforcement with ESLint and Prettier
-* CI-ready scripts for automated validation
-* Containerization and infrastructure integration (planned)
+- Type safety with TypeScript
+- Code quality enforcement with ESLint and Prettier
+- CI-ready scripts for automated validation
+- Containerization and infrastructure integration (planned)
 
 ---
 
 ## 🧰 Tech Stack
 
-* Node.js
-* TypeScript
-* ESLint
-* Prettier
+- Node.js
+- TypeScript
+- ESLint
+- Prettier
 
 ---
 
@@ -32,58 +32,98 @@ This includes:
 
 ### Development
 
-* `npm run dev:start`
+- `pnpm run dev:start`
   Runs the app in development mode using `tsx`.
 
-* `npm run dev:watch`
+- `pnpm run dev:watch`
   Runs the app with file watching enabled.
+
+- `pnpm dev:db:up`
+  Starts the development database Docker container in the background.
+
+- `pnpm dev:db:down`
+  Stops and removes the development database Docker container.
 
 ---
 
 ### Build & Run
 
-* `npm run build`
+- `pnpm run build`
   Compiles TypeScript into JavaScript.
 
-* `npm start`
+- `pnpm start`
   Runs the compiled application.
+
+---
+
+### Migrations
+
+- `pnpm migration:generate`
+  Compares the current entities against the database schema and generates a new migration file with the differences.
+
+- `pnpm migration:run`
+  Builds the project and runs all pending migrations against the database.
+
+- `pnpm migration:check`
+  Builds the project and runs all pending migrations against the database.
+
+- `pnpm migration:revert`
+  Builds the project and reverts the last executed migration.
 
 ---
 
 ### Code Quality
 
-* `npm run lint`
+- `pnpm run lint`
   Runs ESLint to check for code issues.
 
-* `npm run lint:fix`
+- `pnpm run lint:fix`
   Automatically fixes ESLint issues where possible.
 
-* `npm run format`
+- `pnpm run format`
   Formats the code using Prettier.
 
-* `npm run format:check`
+- `pnpm run format:check`
   Checks if files are properly formatted.
 
-* `npm run type-check`
+- `pnpm run type-check`
   Runs TypeScript type checking without emitting files.
 
 ---
 
 ### Testing
 
-* `npm test`
+- `pnpm test`
   Placeholder for future tests.
+
+- `pnpm test`
+  Runs the test suite in watch mode using Vitest.
+
+- `pnpm test:ci`
+  Runs the test suite once without watch mode, intended for CI environments.
+
+- `pnpm test:db:up`
+  Starts the test database Docker container in the background.
+
+- `pnpm test:db:down`
+  Stops and removes the test database Docker container.
+
+- `pnpm migration:run:test`
+  Builds the project and runs pending database migrations against the test database.
+
+- pnpm test:migration:check
+  Builds the project and checks the migration status against the test database. Fails if any pending migrations are detected, ensuring the schema is fully up to date before running tests.
 
 ---
 
-## 🧪 CI/CD Integration (Planned)
+## 🧪 CI/CD Integration
 
 This project is designed to integrate with a CI/CD pipeline where the following checks will be enforced:
 
-* Linting (`npm run lint`)
-* Formatting (`npm run format:check`)
-* Type checking (`npm run type-check`)
-* Build (`npm run build`)
+- Linting (`pnpm run lint`)
+- Formatting (`pnpm run format:check`)
+- Type checking (`pnpm run type-check`)
+- Build (`pnpm run build`)
 
 Any failure in these steps should block deployment.
 
@@ -91,22 +131,19 @@ Any failure in these steps should block deployment.
 
 ## 🐳 Containerization
 
-* `docker compose up -d`
+- `docker compose up -d`
   Creates and starts the dabtabase and backend containers in detach mode.
 
-* `docker compose build`
+- `docker compose build`
   To build the backend container(Only needed if the Dockerfile is changed).
 
 ---
 
 ## ☁️ Future Improvements
 
-* Add authentication and core API features
-* Integrate PostgreSQL
-* Add automated tests
-* Deploy to AWS (EC2)
-* Infrastructure as Code with Terraform
-* Observability and logging
+- Deploy to AWS (EC2)
+- Infrastructure as Code with Terraform
+- Observability and logging
 
 ---
 

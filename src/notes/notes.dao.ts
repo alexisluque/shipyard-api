@@ -1,53 +1,51 @@
-import { query } from '../db/index.js';
+import type { DataSource } from 'typeorm';
+import type { User } from '../auth/users.entity.js';
+import { NotFoundError } from '../error/error.js';
+import { Note } from './notes.entity.js';
 
-export const getNotesByUser = async (userId: string) => {
-  const result = await query(
-    'SELECT * FROM notes WHERE user_id = $1 ORDER BY created_at DESC',
-    [userId],
-  );
+export const CreatenotesDao = (db: DataSource) => {
+  const noteRepository = db.getRepository(Note);
 
-  return result.rows;
-};
+  return {
+    getNotesByUser: async (userId: string) => {
+      const notes = await noteRepository.find({
+        where: { user: { id: userId } },
+        order: { created_at: 'DESC' },
+      });
 
-export const createNote = async (
-  userId: string,
-  title: string,
-  content: string,
-) => {
-  const { rows } = await query(
-    `INSERT INTO notes (user_id, title, content)
-     VALUES ($1, $2, $3)
-     RETURNING *`,
-    [userId, title, content],
-  );
+      return notes;
+    },
+    createNote: async (userId: string, title: string, content: string) => {
+      const note = new Note();
 
-  return rows[0];
-};
+      note.title = title;
+      note.content = content;
+      note.user = { id: userId } as User;
 
-export const updateNote = async (
-  noteId: string,
-  userId: string,
-  title: string,
-  content: string,
-) => {
-  const result = await query(
-    `UPDATE notes
-     SET title = $1, content = $2
-     WHERE id = $3 AND user_id = $4
-     RETURNING *`,
-    [title, content, noteId, userId],
-  );
+      return await noteRepository.save(note);
+    },
+    updateNote: async (
+      noteId: string,
+      userId: string,
+      title: string,
+      content: string,
+    ) => {
+      const note = await noteRepository.findOneBy({
+        id: noteId,
+        user: { id: userId },
+      });
 
-  return result.rows[0];
-};
+      if (!note) {
+        throw new NotFoundError('Note not found');
+      }
 
-export const deleteNote = async (noteId: string, userId: string) => {
-  const { rows } = await query(
-    `DELETE FROM notes
-     WHERE id = $1 AND user_id = $2
-     RETURNING *`,
-    [noteId, userId],
-  );
+      note.title = title;
+      note.content = content;
 
-  return rows[0];
+      return await noteRepository.save(note);
+    },
+    deleteNote: async (noteId: string, userId: string) => {
+      return await noteRepository.delete({ id: noteId, user: { id: userId } });
+    },
+  };
 };

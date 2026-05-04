@@ -1,17 +1,26 @@
-import { beforeEach, afterAll, expect, describe, it } from 'vitest';
-import { end, query } from '../src/db/index.js';
+import { expect, describe, it, beforeAll, beforeEach } from 'vitest';
 import supertest from 'supertest';
-import { createApp } from '../src/app.js';
+import { createApp } from '../src/app/app.js';
+import type TestAgent from 'supertest/lib/agent.js';
+import type { DataSource } from 'typeorm';
+import { resetDatabase } from './setup-db.js';
+import { createTestDataSource } from './data-source.tests.js';
 
-const app = createApp({
-  connectionString: process.env.DATABASE_URL,
+let app;
+let db: DataSource;
+let request: TestAgent;
+
+beforeAll(async () => {
+  db = createTestDataSource({ url: process.env.DATABASE_URL! });
+  await db.initialize();
+
+  app = await createApp({ db });
+
+  request = supertest(app);
 });
 
-const request = supertest(app);
-
 beforeEach(async () => {
-  await query('DELETE FROM notes', []);
-  await query('DELETE FROM users', []);
+  await resetDatabase(db);
 });
 
 describe('POST /auth/register', () => {
@@ -164,6 +173,6 @@ describe('POST /auth/login', () => {
   });
 });
 
-afterAll(async () => {
-  await end();
-});
+// afterAll(async () => {
+//   // await end();
+// });

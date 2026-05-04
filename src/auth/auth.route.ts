@@ -1,11 +1,15 @@
 import express, { Router } from 'express';
-import { login, register } from './auth.controller.js';
 import { validate } from '../middleware/validation.js';
 import { loginSchema } from './auth.schema.js';
+import { createAuthController } from './auth.controller.js';
+import type { AppContext } from '../app/context.js';
 
-const router: Router = express.Router();
+export const createAuthRouter = (ctx: AppContext) => {
+  const { login, register } = createAuthController(ctx);
+  const router: Router = express.Router();
 
-router.post('/register', validate(loginSchema), register);
-router.post('/login', validate(loginSchema), login);
+  router.post('/register', validate(loginSchema), register);
+  router.post('/login', validate(loginSchema), login);
 
-export default router;
+  return router;
+};

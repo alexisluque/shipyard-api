@@ -9,10 +9,9 @@ services:
       - 5432:${POSTGRES_PORT}
     volumes:
       - pg-data:/var/lib/postgresql
-      - ./src/db/init:/docker-entrypoint-initdb.d
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "pg_isready -U postgres"]
+      test: ['CMD', 'pg_isready -U postgres']
       interval: 1m30s
       timeout: 30s
       retries: 5

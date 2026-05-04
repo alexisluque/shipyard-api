@@ -1,12 +1,15 @@
 import express, { Router } from 'express';
 
-import authRoute from './auth/auth.route.js';
-import notesRoute from './notes/notes.route.js';
+import { createAuthRouter } from './auth/auth.route.js';
+import { createNotesRouter } from './notes/notes.route.js';
 import { authMiddleware } from './middleware/auth.js';
+import type { AppContext } from './app/context.js';
 
-const router: Router = express.Router();
+export const createRouter = (ctx: AppContext) => {
+  const router: Router = express.Router();
 
-router.use('/auth', authRoute);
-router.use('/notes', authMiddleware, notesRoute);
+  router.use('/auth', createAuthRouter(ctx));
+  router.use('/notes', authMiddleware, createNotesRouter(ctx));
 
-export default router;
+  return router;
+};
