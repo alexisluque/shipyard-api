@@ -111,7 +111,7 @@ This includes:
 - `pnpm migration:run:test`
   Builds the project and runs pending database migrations against the test database.
 
-- pnpm test:migration:check
+- `pnpm test:migration:check`
   Builds the project and checks the migration status against the test database. Fails if any pending migrations are detected, ensuring the schema is fully up to date before running tests.
 
 ---
