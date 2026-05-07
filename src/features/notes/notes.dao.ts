@@ -1,6 +1,6 @@
 import type { DataSource } from 'typeorm';
 import type { User } from '../auth/users.entity.js';
-import { NotFoundError } from '../error/error.js';
+import { NotFoundError } from '../../error/error.js';
 import { Note } from './notes.entity.js';
 
 export const CreatenotesDao = (db: DataSource) => {
@@ -15,6 +15,7 @@ export const CreatenotesDao = (db: DataSource) => {
 
       return notes;
     },
+
     createNote: async (userId: string, title: string, content: string) => {
       const note = new Note();
 
@@ -24,6 +25,7 @@ export const CreatenotesDao = (db: DataSource) => {
 
       return await noteRepository.save(note);
     },
+
     updateNote: async (
       noteId: string,
       userId: string,
@@ -44,6 +46,7 @@ export const CreatenotesDao = (db: DataSource) => {
 
       return await noteRepository.save(note);
     },
+
     deleteNote: async (noteId: string, userId: string) => {
       return await noteRepository.delete({ id: noteId, user: { id: userId } });
     },

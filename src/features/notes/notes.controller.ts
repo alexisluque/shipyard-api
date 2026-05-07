@@ -1,7 +1,7 @@
 import type { Request, Response } from 'express';
-import { NotFoundError } from '../error/error.js';
-import { validateUUID } from '../utils/index.js';
-import type { AppContext } from '../app/context.js';
+import { NotFoundError } from '../../error/error.js';
+import { validateUUID } from '../../utils/index.js';
+import type { AppContext } from '../../app/context.js';
 import { CreatenotesDao } from './notes.dao.js';
 
 export const createNotesController = (ctx: AppContext) => {
@@ -15,6 +15,7 @@ export const createNotesController = (ctx: AppContext) => {
 
       res.json(notes);
     },
+
     createNote: async (req: Request, res: Response) => {
       const { title, content } = req.body;
 
@@ -22,6 +23,7 @@ export const createNotesController = (ctx: AppContext) => {
 
       res.status(201).json(note);
     },
+
     updateNote: async (req: Request, res: Response) => {
       const { id } = req.params;
       const { title, content } = req.body;
@@ -38,6 +40,7 @@ export const createNotesController = (ctx: AppContext) => {
 
       res.json(note);
     },
+
     deleteNote: async (req: Request, res: Response) => {
       const { id } = req.params as { id: string };
 
@@ -45,7 +48,7 @@ export const createNotesController = (ctx: AppContext) => {
         throw new NotFoundError('Note not found');
       }
 
-      const note = await deleteNote(id as string, req.userId!);
+      const note = await deleteNote(id, req.userId!);
 
       if (!note) {
         throw new NotFoundError('Note not found');

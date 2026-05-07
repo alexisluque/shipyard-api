@@ -15,7 +15,7 @@ beforeAll(async () => {
   db = createTestDataSource({ url: process.env.DATABASE_URL! });
   await db.initialize();
 
-  const logger = pino({ level: 'debug', transport: { target: 'pino-pretty' } });
+  const logger = pino({ level: 'silent' });
 
   app = await createApp({ db, logger });
 

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { requiedStringSchema } from '../shared/schemas.js';
+import { requiedStringSchema } from '../../shared/schemas.js';
 
 export const noteSchema = z.object({
   title: requiedStringSchema(),
