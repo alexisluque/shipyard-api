@@ -4,8 +4,8 @@ import { createApp } from '../src/app/app.js';
 import type TestAgent from 'supertest/lib/agent.js';
 import type { DataSource } from 'typeorm';
 import { resetDatabase } from './setup-db.js';
-import type { UserDto } from '../src/auth/auth.dto.js';
-import type { NoteDto } from '../src/notes/notes.dto.js';
+import type { UserDto } from '../src/features/auth/auth.dto.js';
+import type { NoteDto } from '../src/features/notes/notes.dto.js';
 import { createTestDataSource } from './data-source.tests.js';
 import pino from 'pino';
 
@@ -17,7 +17,7 @@ beforeAll(async () => {
   db = createTestDataSource({ url: process.env.DATABASE_URL! });
   await db.initialize();
 
-  const logger = pino({ level: 'debug', transport: { target: 'pino-pretty' } });
+  const logger = pino({ level: 'silent' });
   app = await createApp({ db, logger });
 
   request = supertest(app);

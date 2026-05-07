@@ -1,8 +1,8 @@
 import express, { Router } from 'express';
-import { authMiddleware } from '../middleware/auth.js';
-import { validate } from '../middleware/validation.js';
+import { authMiddleware } from '../../middleware/auth.js';
+import { validate } from '../../middleware/validation.js';
 import { noteParamsSchema, noteSchema } from './notes.schema.js';
-import type { AppContext } from '../app/context.js';
+import type { AppContext } from '../../app/context.js';
 import { createNotesController } from './notes.controller.js';
 
 export const createNotesRouter = (ctx: AppContext) => {

@@ -1,4 +1,4 @@
-import { ConflictError, UnauthorizedError } from '../error/error.js';
+import { ConflictError } from '../../error/error.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import type { LoginType } from './auth.schema.js';
@@ -18,26 +18,25 @@ export const createAuthDao = (db: DataSource) => {
         throw new ConflictError('Email already exists');
       }
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-
       const newUser = new User();
 
       newUser.email = email;
-      newUser.password = hashedPassword;
+      newUser.password = password;
 
       return await userRepository.save(newUser);
     },
+
     loginDao: async ({ email, password }: LoginType) => {
       const user = await userRepository.findOne({ where: { email } });
 
       if (!user) {
-        throw new UnauthorizedError('Invalid credentials');
+        return undefined;
       }
 
       const validPassword = await bcrypt.compare(password, user.password);
 
       if (!validPassword) {
-        throw new UnauthorizedError('Invalid credentials');
+        return undefined;
       }
 
       const token = jwt.sign({ userId: user.id }, JWT_SECRET!, {

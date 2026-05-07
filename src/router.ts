@@ -1,7 +1,7 @@
 import express, { Router } from 'express';
 
-import { createAuthRouter } from './auth/auth.route.js';
-import { createNotesRouter } from './notes/notes.route.js';
+import { createAuthRouter } from './features/auth/auth.route.js';
+import { createNotesRouter } from './features/notes/notes.route.js';
 import { authMiddleware } from './middleware/auth.js';
 import type { AppContext } from './app/context.js';
 
