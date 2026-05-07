@@ -5,6 +5,7 @@ import type TestAgent from 'supertest/lib/agent.js';
 import type { DataSource } from 'typeorm';
 import { resetDatabase } from './setup-db.js';
 import { createTestDataSource } from './data-source.tests.js';
+import pino from 'pino';
 
 let app;
 let db: DataSource;
@@ -14,7 +15,9 @@ beforeAll(async () => {
   db = createTestDataSource({ url: process.env.DATABASE_URL! });
   await db.initialize();
 
-  app = await createApp({ db });
+  const logger = pino({ level: 'debug', transport: { target: 'pino-pretty' } });
+
+  app = await createApp({ db, logger });
 
   request = supertest(app);
 });
@@ -120,8 +123,6 @@ describe('POST /auth/login', () => {
       email: 'user@example.com',
       password: 'password123',
     });
-
-    console.log(res);
 
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ accessToken: expect.any(String) });

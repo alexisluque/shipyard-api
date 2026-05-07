@@ -1,12 +1,15 @@
 import express from 'express';
 import type { Express } from 'express';
 import { createRouter } from '../router.js';
-import { errorHandlerMiddleware } from '../middleware/errorHandler.js';
+import { createErrorHandlerMiddleware } from '../middleware/errorHandler.js';
 import dataSource from '../db/data-source.cli.js';
 import type { AppContext } from './context.js';
+import { createHttpLogger } from '../lib/http-logger.js';
 
 export const createApp = async (ctx: AppContext) => {
   const app: Express = express();
+
+  app.use(createHttpLogger(ctx.logger));
 
   app.use(express.json());
 
@@ -30,7 +33,7 @@ export const createApp = async (ctx: AppContext) => {
     }
   });
 
-  app.use(errorHandlerMiddleware);
+  app.use(createErrorHandlerMiddleware(ctx));
 
   return app;
 };

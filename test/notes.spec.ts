@@ -7,6 +7,7 @@ import { resetDatabase } from './setup-db.js';
 import type { UserDto } from '../src/auth/auth.dto.js';
 import type { NoteDto } from '../src/notes/notes.dto.js';
 import { createTestDataSource } from './data-source.tests.js';
+import pino from 'pino';
 
 let app;
 let db: DataSource;
@@ -16,7 +17,8 @@ beforeAll(async () => {
   db = createTestDataSource({ url: process.env.DATABASE_URL! });
   await db.initialize();
 
-  app = await createApp({ db });
+  const logger = pino({ level: 'debug', transport: { target: 'pino-pretty' } });
+  app = await createApp({ db, logger });
 
   request = supertest(app);
 });
@@ -57,7 +59,6 @@ describe('GET /notes', () => {
   it('should return all notes for the authenticated user', async () => {
     const { accessToken } = await loginAndRegister();
     const note = await createNote(accessToken);
-    console.log(note, 'note');
 
     const res = await request
       .get('/api/notes')
@@ -259,8 +260,6 @@ describe('DELETE /notes/:id', () => {
     const res = await request
       .delete(`/api/notes/${note.id}`)
       .set('Authorization', `Bearer ${accessToken}`);
-
-    console.log(res.body);
 
     expect(res.status).toBe(204);
   });
