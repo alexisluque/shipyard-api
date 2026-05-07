@@ -5,6 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  type Relation,
 } from 'typeorm';
 import { User } from '../auth/users.entity.js';
 
@@ -26,5 +27,5 @@ export class Note {
   updated_at!: Date;
 
   @ManyToOne(() => User, (user) => user.notes, { nullable: false })
-  user!: User;
+  user!: Relation<User>;
 }

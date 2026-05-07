@@ -5,6 +5,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  type Relation,
 } from 'typeorm';
 import { Note } from '../notes/notes.entity.js';
 
@@ -26,5 +27,5 @@ export class User {
   updated_at!: Date;
 
   @OneToMany(() => Note, (note) => note.user)
-  notes!: Note[];
+  notes!: Relation<Note[]>;
 }
