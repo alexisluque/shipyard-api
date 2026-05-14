@@ -33,8 +33,6 @@ const main = async () => {
       await db.destroy();
 
       logger.info('Database connection closed');
-
-      process.exit(0);
     });
 
     // force shutdown after timeout

@@ -6,10 +6,10 @@
   "main": "index.ts",
   "scripts": {
     "start": "cross-env NODE_ENV=production node dist/src/index.js",
-    "dev:start": "tsx src/index.ts",
+    "dev:start": "tsx src/index.ts | pino-pretty",
     "dev:db:up": "docker compose up db -d",
     "dev:db:down": "docker compose down",
-    "dev:watch": "tsx watch src/index.ts",
+    "dev:watch": "tsx watch src/index.ts | pino-pretty",
     "build": "tsc -p tsconfig.build.json",
     "type-check": "tsc --noEmit",
     "lint": "eslint ./src",
@@ -27,7 +27,7 @@
     "migration:revert": "pnpm build && typeorm migration:revert -d dist/src/db/data-source.cli.js",
     "migration:run": "pnpm build && typeorm migration:run -d dist/src/db/data-source.cli.js",
     "migration:check": "pnpm build && typeorm migration:show -d dist/src/db/data-source.cli.js | tee migration-status.txt && ! grep \"\\[ \\]\" migration-status.txt",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "keywords": [
     "nodejs",
