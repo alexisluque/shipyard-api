@@ -1,5 +1,7 @@
 # Shipyard - Backend API
 
+[![codecov](https://codecov.io/github/alexisluque/shipyard-api/graph/badge.svg?token=J23FZISMQ1)](https://codecov.io/github/alexisluque/shipyard-api)
+
 This is the backend service for **Shipyard**, a production-like full-stack application designed to explore real-world DevOps practices.
 
 The API is built with Node.js and TypeScript, and is intended to run in a containerized environment with CI/CD pipelines and cloud deployment.
